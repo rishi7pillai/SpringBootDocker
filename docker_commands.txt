@@ -1,0 +1,206 @@
+https://dockerlabs.collabnix.com/docker/cheatsheet/
+
+mvn clean install  , docker-machine ip  http://192.168.99.100:8081/
+
+======DOCKER run Without Dockerfile==========
+mvn spring-boot:build-image [build image without dockerfile]
+docker build -t spring-boot . (for image creation)(-t is for tag)
+docker run  -p 8080:8080 buildpackdemo:0.0.1-SNAPSHOT .
+docker run --rm  -p 8080:8080 buildpackdemo:0.0.1-SNAPSHOT . [with out dcfil]
+
+
+=======Docker Push to Docker hub===============
+docker tag buildpackdemo:0.0.1-SNAPSHOT rishipollai/buildpackdemo
+docker push rishipollai/buildpackdemo
+
+
+=======Docker Remove an image ==========
+docker rmi id  [delete images]
+
+=====Docker Containers=====
+docker ps      [shwo files]
+docker ps -a   [show all killed files]
+docker rm -f id [delete file]
+
+========Dockerfile=========
+FROM openjdk:11   [jdk version]
+EXPOSE 8080       [expose the port out of container]
+ADD target/spring-boot.jar spring-boot.jar   [jar and directory]
+ENTRYPOINT ["java","-jar","spring-boot.jar"]  
+
+
+===========Docker issues Stackoverflow ==================
+https://stackoverflow.com/questions/58942662/unable-to-load-spring-boot-application-running-in-docker
+https://stackoverflow.com/questions/53984688/running-a-spring-boot-app-from-docker-is-not-working
+https://stackoverflow.com/questions/55562381/not-able-to-connect-to-docker-image-with-a-spring-boot-application (Docker run for windos)
+
+
+=========Youtube===========
+https://www.youtube.com/watch?v=pIei1m323KU&ab_channel=DailyCodeBuffer
+https://www.youtube.com/watch?v=igG3sGipoXM&ab_channel=GeekyMon2
+
+====================================for docker compose===================================
+version: '3'                   [compose version]
+
+services:                      [1 . for mysql service]
+  mysql-standalone:            [mysql container name]
+    image: 'mysql:5.7'         [mysql image]
+    environment:                [env properties]
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=root    [for other users]
+      - MYSQL_DATABASE=demo
+    ports:                    [ports local:container port]
+      - "3307:3306"
+
+
+volumes :
+  -mysql-data:/var/lib/mysql        [where volume is moundte]
+data will present there , it is for data persistant 
+
+
+
+
+  springboot-docker-container:              [2 .application container name]
+    image: springboot-docker-container      [application image name]
+    ports:                              [port local:container port]
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-standalone:3306/demo?autoReconnect=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+    build:
+      context: "./"                 [context root folder build]
+      dockerfile: "DockerFile"
+    depends_on:
+      - mysql-standalone             [link part  provice service which are depends]
+volumes:
+ mysql-data:                         [volume link]
+
+docker-compose -f docker-compose.yml up   [for run the compose file]
+docker-compose -f docker-compose.yml down [for remove the compose file]
+docker-compose -f docker-compose.yml down -v  [for remove the compose file with voiume]
+=====================================================================================================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+git init
+git status [check the status]
+git add . (for all files)
+git add filename
+git reset filename , git reset . (for all file)
+git remote -v
+git rm -f 'filename'  [delete a file]
+git commit -m   [commit the changes]
+git push origin master [push to github]
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+mvn clean install  , docker-machine ip
+
+http://192.168.99.100:8080/
+======DOCKER run Without Dockerfile==========
+mvn spring-boot:build-image
+docker build -t spring-boot . (for image creation)(-t is for tag)
+docker run  -p 8080:8080 buildpackdemo:0.0.1-SNAPSHOT .
+docker run --rm  -p 8080:8080 buildpackdemo:0.0.1-SNAPSHOT .
+
+
+=======Docker Push to Docker hub===============
+docker tag buildpackdemo:0.0.1-SNAPSHOT rishipollai/buildpackdemo
+docker push rishipollai/buildpackdemo
+
+
+=======Docker Remove an image ==========
+docker rmi packagename
+
+=====Docker Containers=====
+docker ps
+docker ps -a
+docker rm -f id 
+
+========Dockerfile=========
+FROM openjdk:11
+EXPOSE 8080  [container to container communication]
+ADD target/spring-boot.jar spring-boot.jar
+ENTRYPOINT ["java","-jar","spring-boot.jar"]
+
+
+https://stackoverflow.com/questions/58942662/unable-to-load-spring-boot-application-running-in-docker
+https://stackoverflow.com/questions/53984688/running-a-spring-boot-app-from-docker-is-not-working
+https://stackoverflow.com/questions/55562381/not-able-to-connect-to-docker-image-with-a-spring-boot-application
+
+
+
+=======Docker run Mysql==========
+docker run -d -p 6033:3306 --name=mysql-demo --env="MYSQL_ROOT_PASSWORD=root" --env="MYSQL_PASSWORD=root" --env="MYSQL_USER=root" --env="MYSQL_DATABASE=demo" mysql:5
+
+docker run --name mysql --standalone -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=test -e MYSQL_USER=root MYSQL_PASSWORD=root -d mysql:5.6
+
+
+docker exec -it mysql-docker bash
+mysql -uroot -proot
+
+docker-compose -f docker-compose.yml up//for compose
+
+CREATE TABLE `Register` (
+  `userId` int(11) ,
+  `userPass` varchar(250) NOT NULL,
+  `userName` varchar(250) NOT NULL,
+  PRIMARY KEY (`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+
+
+//docker run -t --link mysql-docker:mysql -p 8080:8080 docker-sql
+
+docker run -t --link mysqlname:mysql -p 8080:8080 image
+
+
+?useSSL=false
+#database configuration
+spring.datasource.url = jdbc:mysql://mysql-docker:3306/demo
+spring.datasource.password = root
+
+
+
+#hibernate configuration
+spring.jpa.hibernate.ddl-auto = update
+spring.jpa.show-sql = true
+#spring.jpa.properties.hibernate.dialect 
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+spring.jpa.hibernate.naming-strategy = org.hibernate.cfg.ImprovedNamingStrategy
+==========================================
+version: '3'      [compose version]
+services:      [1 . for mysql service]
+  mysql-standalone:      [mysql container name]
+    image: 'mysql:5.7'     [mysql image]
+    environment:              [env properties]
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=root   [for other users]
+      - MYSQL_DATABASE=demo
+    ports:             [ports local/host:container port]
+      - "3307:3306"
+volumes :
+  -mysql-data:/var/lib/mysql     [where volume is moundte]
+data will present there , it is for data persistant 
+
+
+  springboot-docker-container:   [application container name]
+    image: springboot-docker-container   [application image name]
+    ports:       [port local:container port]
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-standalone:3306/demo?autoReconnect=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+    build:
+      context: "./"       [context root folder build]
+      dockerfile: "DockerFile"
+    depends_on:
+      - mysql-standalone     [link part  provice service which are depends]
+volumes:
+ mysql-data:     [volume link]
+
+docker-compose -f docker-compose.yml up
+==================================================================================================================================================
